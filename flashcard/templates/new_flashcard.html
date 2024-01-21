@@ -1,0 +1,133 @@
+{% extends 'base.html' %} {% load static %} {% block 'cabecalho' %}
+<link rel="stylesheet" href='{% static "users/css/register.css" %}' />
+<link
+  href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+  rel="stylesheet"
+/>
+<link href="{% static 'flashcard/css/new_flashcard.css '%}" rel="stylesheet" />
+{% endblock 'cabecalho' %} {% block 'conteudo' %}
+{% include "partials/header.html" %}
+
+<div class="container">
+  <br />
+  <br />
+  <div class="row">
+    <div class="col-md">
+      {% if messages %}
+      <br />
+      {% for message in messages %}
+      <section class="alert {{message.tags}}">{{message}}</section>
+      <br />
+      {% endfor %} {% endif %}
+      <div class="box-form">
+        <form action="{% url 'new_flashcard' %}" method="POST">
+          {% csrf_token %}
+          <h3>Novo flashcard</h3>
+          <br />
+          <label>Pergunta</label>
+
+          <textarea
+            class="form-control"
+            name="question"
+            placeholder="pergunta"
+          ></textarea>
+          <br />
+          <label>Resposta</label>
+          <textarea class="form-control" name="result"></textarea>
+          <br />
+          <div class="row">
+            <div class="col-md">
+              <label for="">Categoria</label>
+              <select class="form-select" name="category">
+                <option value="">Selecione categoria</option>
+                {% for category in categories %}
+                <option value="{{category.id}}">{{category.name}}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md">
+              <label for="">Dificuldade</label>
+              <select class="form-select" name="difficulty">
+                <option value="">Selecione Dificuldade</option>
+                {% for difficulty in difficulties %}
+                <option value="{{difficulty.0}}">{{difficulty.1}}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+          <br />
+          <input type="submit" value="Enviar" class="btn-cadastro" />
+          <br />
+          <br />
+          <br />
+        </form>
+      </div>
+    </div>
+    <div class="col-md">
+      <form action="{% url 'new_flashcard' %}" method="GET">
+        <div class="row">
+          <div class="col-md">
+            <label for="">Categoria</label>
+            <select name="category" id="" class="form-select">
+              <option value="">todas as Categorias</option>
+              {% for category in categories %}
+              <option value="{{category.id}}">{{category.name}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md">
+            <label for="">Dificuldade</label>
+            <select name="difficulty" id="" class="form-select">
+              <option value="">Todas as Dificuldades</option>
+              {% for difficulty in difficulties %}
+              <option value="{{difficulty.0}}">{{difficulty.1}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md">
+            <br />
+            <input
+              type="submit"
+              style="width: 100%"
+              value="Filtrar"
+              class="btn-cadastro"
+            />
+          </div>
+        </div>
+      </form>
+
+      <br />
+      <br />
+
+      {% for flashcard in flashcards %}
+      <div class="box-new-flashcard" onclick="flip_card({{flashcard.id}})">
+        <div class="flashcard {{flashcard.css_difficulty}}">
+          <div class="flashcard-categoria">{{flashcard.category}}</div>
+
+          <a href="{% url 'deletar_flashcard' flashcard.id %}"><i class="icone-exit bx bx-x-circle"></i></a>
+          <br />
+          <br />
+          <br />
+          <span class="question">Pergunta:</span>
+          <br />
+          <br />
+          <div class="flashcard-box-item">
+            <p class="flashcard-item">{{flashcard.question}} ?</p>
+          </div>
+        </div>
+        <div class="resposta-flashcard" id="{{flashcard.id}}">
+          <span>Resposta.:</span>
+          <br />
+          <p>{{flashcard.result}}</p>
+        </div>
+      </div>
+      <br />
+      <br />
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script src="{% static 'flashcard/js/flashcard.js' %}"></script>
+
+{% endblock 'conteudo' %}
