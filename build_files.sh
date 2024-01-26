@@ -7,4 +7,4 @@
 pip install -r requirements.txt
 
 # Coletar arquivos estáticos
-python3.11 manage.py collectstatic
+# python3.11 manage.py collectstatic
