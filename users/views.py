@@ -37,19 +37,22 @@ def register(request):
 def logar(request):
     if request.method == "GET":
         if request.user.is_authenticated:
+            user = User.objects.get(user=request.user)
+            print(user)
             return redirect("/flashcard/new_flashcard/")
         else:
-            return render(request, "logon.html", {})
+            return render(request, "login.html", {})
     elif request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
 
     user = auth.authenticate(request, username=username, password=password)
 
-    if user:
+    if user:        
         auth.login(request, user)
-        messages.add_message(request, constants.SUCCESS, "Bem vindo!")
-        return redirect("/flashcard/new_flashcard/")
+        messages.add_message(request, constants.SUCCESS, f'Bem vindo! {user}')
+        print(user)
+        return redirect("/flashcard/new_flashcard/", {'user': user})
 
     else:
         messages.add_message(

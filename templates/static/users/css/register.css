@@ -83,3 +83,7 @@
     padding-left: 25px;
     padding-right: 25px;
 }
+
+.header_nav{
+    border: 1px solid red;
+}

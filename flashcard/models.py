@@ -44,7 +44,8 @@ class Challenge(models.Model):
     title = models.CharField(max_length=100)
     category = models.ManyToManyField(Category)
     quantity_questions = models.IntegerField()
-    difficulty = models.CharField(max_length=1, choices=Flashcard.DIFFICULTY_CHOICES)
+    difficulty = models.CharField(
+        max_length=1, choices=Flashcard.DIFFICULTY_CHOICES)
     flashcards = models.ManyToManyField(FlashcardChallenge)
 
     def __str__(self):
