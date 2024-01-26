@@ -1,4 +1,3 @@
-from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, render
 from .models import Category, Challenge, Flashcard, FlashcardChallenge
 from django.contrib.messages import constants
@@ -173,7 +172,12 @@ def list_challenges(request):
 def challenges(request, id):
     challenge = Challenge.objects.get(id=id)
     if not challenge.user == request.user:
-        return HttpResponseForbidden()
+        messages.add_message(
+            request,
+            constants.ERROR,
+            "Operação cancelada, violação de segurança",
+        )
+        return redirect("/flashcard/list_challenges/")
 
     if request.method == "GET":
         hits = (
@@ -209,7 +213,12 @@ def challenge_send_answer(request, id):
     challenge_id = request.GET.get("challenge_id")
 
     if not flashcard_challenge.flashcard.user == request.user:
-        return HttpResponseForbidden()
+        messages.add_message(
+            request,
+            constants.ERROR,
+            "Operação cancelada, violação de segurança",
+        )
+        return redirect("/flashcard/list_challenges/")
 
     flashcard_challenge.answered = True
 
