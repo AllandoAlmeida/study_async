@@ -15,14 +15,12 @@ def register(request):
         confirm_password = request.POST.get("confirm_password")
 
         if not password == confirm_password:
-            messages.add_message(
-                request, constants.ERROR, " senhas não coíncidem")
+            messages.add_message(request, constants.ERROR, " senhas não coíncidem")
             return redirect("/users/register")
 
         user = User.objects.filter(username=username)
         if user.exists():
-            messages.add_message(
-                request, constants.ERROR, " Usuários já existe")
+            messages.add_message(request, constants.ERROR, " Usuários já existe")
             return redirect("/users/register")
         try:
             User.objects.create_user(username=username, password=password)
@@ -37,8 +35,6 @@ def register(request):
 def logar(request):
     if request.method == "GET":
         if request.user.is_authenticated:
-            user = User.objects.get(user=request.user)
-            print(user)
             return redirect("/flashcard/new_flashcard/")
         else:
             return render(request, "login.html", {})
@@ -48,15 +44,14 @@ def logar(request):
 
     user = auth.authenticate(request, username=username, password=password)
 
-    if user:        
+    if user:
         auth.login(request, user)
-        messages.add_message(request, constants.SUCCESS, f'Bem vindo! {user}')
+        messages.add_message(request, constants.SUCCESS, f"Bem vindo! {user}")
         print(user)
-        return redirect("/flashcard/new_flashcard/", {'user': user})
+        return redirect("/flashcard/new_flashcard/", {"user": user})
 
     else:
-        messages.add_message(
-            request, constants.ERROR, "Usurname ou senha inválidos")
+        messages.add_message(request, constants.ERROR, "Usurname ou senha inválidos")
 
         return redirect("/users/logar")
 
@@ -64,6 +59,5 @@ def logar(request):
 def logout(request):
     auth.logout(request)
 
-    messages.add_message(
-        request, constants.INFO, "Logout realizado com sucesso")
+    messages.add_message(request, constants.INFO, "Logout realizado com sucesso")
     return redirect("/users/logar")

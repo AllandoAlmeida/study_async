@@ -7,40 +7,39 @@ from django.contrib import messages
 
 # Create your views here.
 def new_flashcard(request):
-    print(request.user.is_authenticated)
-    if not request.user.is_authenticated:
-        return redirect("/users/logar")
     if request.method == "GET":
-        categories = Category.objects.all()
-        difficulties = Flashcard.DIFFICULTY_CHOICES
-        flashcards = Flashcard.objects.filter(user=request.user)
+        if not request.user.is_authenticated:
+            return redirect("/users/logar")
+        else:
+            categories = Category.objects.all()
+            difficulties = Flashcard.DIFFICULTY_CHOICES
+            flashcards = Flashcard.objects.filter(user=request.user)
 
-        category_filter = request.GET.get("category")
-        difficulty_filter = request.GET.get("difficulty")
+            category_filter = request.GET.get("category")
+            difficulty_filter = request.GET.get("difficulty")
 
-        if category_filter:
-            flashcards = flashcards.filter(category__id=category_filter)
+            if category_filter:
+                flashcards = flashcards.filter(category__id=category_filter)
 
-        if difficulty_filter:
-            flashcards = flashcards.filter(difficulty=difficulty_filter)
+            if difficulty_filter:
+                flashcards = flashcards.filter(difficulty=difficulty_filter)
 
-        if len(flashcards) == 0:
-            messages.add_message(
+            if len(flashcards) == 0:
+                messages.add_message(
+                    request,
+                    constants.INFO,
+                    "Não há dados para os critérios selecionados",
+                )
+
+            return render(
                 request,
-                constants.INFO,
-                "Não há dados para os critérios selecionados",
+                "new_flashcard.html",
+                {
+                    "categories": categories,
+                    "difficulties": difficulties,
+                    "flashcards": flashcards,
+                },
             )
-            return redirect("/flashcard/new_flashcard")
-
-        return render(
-            request,
-            "new_flashcard.html",
-            {
-                "categories": categories,
-                "difficulties": difficulties,
-                "flashcards": flashcards,
-            },
-        )
     elif request.method == "POST":
         question = request.POST.get("question")
         result = request.POST.get("result")
@@ -67,10 +66,6 @@ def new_flashcard(request):
             category_id=category,
             difficulty=difficulty,
         )
-        print("flashcard.user", flashcard.user)
-        print("flashcard.question", flashcard.question)
-        print("flashcard.category", flashcard.category)
-        print("flashcard.difficulty", flashcard.difficulty)
 
         flashcard.save()
         messages.add_message(
@@ -87,8 +82,7 @@ def deletar_flashcard(request, id):
         return redirect("/flashcard/new_flashcard")
 
     if not flashcard.user == request.user:
-        messages.add_message(
-            request, constants.ERROR, "Operação não realizada!")
+        messages.add_message(request, constants.ERROR, "Operação não realizada!")
         return redirect("/flashcard/new_flashcard")
     else:
         flashcard.delete()
@@ -183,8 +177,7 @@ def challenges(request, id):
 
     if request.method == "GET":
         hits = (
-            challenge.flashcards.filter(answered=True)
-            .filter(got_it_right=True).count()
+            challenge.flashcards.filter(answered=True).filter(got_it_right=True).count()
         )
         wrong = (
             challenge.flashcards.filter(answered=True)
@@ -234,8 +227,7 @@ def report(request, id):
     hits = challenge.flashcards.filter(got_it_right=True).count()
 
     wrong = (
-        challenge.flashcards.filter(answered=True)
-        .filter(got_it_right=False).count()
+        challenge.flashcards.filter(answered=True).filter(got_it_right=False).count()
     )
 
     data = [hits, wrong]
