@@ -1,10 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# exit on error
+set -o errexit
 
-# Ativar o ambiente virtual (se necessário)
-# source venv/bin/activate  # No Windows, use `venv\Scripts\activate`
-
-# Instalar dependências
 pip install -r requirements.txt
-
-# Coletar arquivos estáticos
-# python3.11 manage.py collectstatic
+python manage.py collectstatic --no-input
+python manage.py migrate
